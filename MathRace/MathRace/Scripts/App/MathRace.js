@@ -71,8 +71,7 @@ $(document).ready(function() {
         }, self);
 
         self.sendOperationResult = function() {
-            var data = { operation: self.input_player1(), name: self.name() };
-            raceHub.solveOperation(data);
+            raceHub.solveOperation(self.input_player1(), self.name());
         };
     }
 

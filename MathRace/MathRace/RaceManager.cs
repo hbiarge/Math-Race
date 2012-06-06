@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Web;
+using MathRace.Model;
 using SignalR;
 using SignalR.Hubs;
 
@@ -14,11 +15,13 @@ namespace MathRace
         private static IHubContext hub;
         private static DateTime gameStarted;
 
+        public static Operation Operation { get; private set; }
 
         public static void Start()
         {
-            gameStarted = DateTime.Now;
             hub = GlobalHost.ConnectionManager.GetHubContext<Race>();
+            Operation = Operation.Create();
+            gameStarted = DateTime.Now;
 
             timer = new Timer(o =>
                                   {
@@ -36,6 +39,11 @@ namespace MathRace
                                       }
 
                                   }, null, 0, 1000);
+        }
+
+        public static void NewOperation()
+        {
+            Operation = Operation.Create();
         }
     }
 }
