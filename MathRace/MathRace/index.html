@@ -2,12 +2,96 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
     <title>Math Race</title>
+    <link rel='stylesheet' href='Content/bootstrap.superhero.min.css' />
+    <link rel='stylesheet' href='Content/style.css' />
     <script type="text/javascript" src="Scripts/jquery-1.7.2.js"></script>
-    <script type="text/javascript" src="Scripts/jquery.signalR-0.5.0.js"></script>
-    <script type="text/javascript" src="Scripts/knockout-2.1.0.js"></script>
-    <script type="text/javascript" src="signalr/hubs"></script>
 </head>
 <body>
 
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <ul class="nav">
+                    <li class="active">
+                        <a href="#">Math-race <span id="socketio"></span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+
+        <div class="alert alert-danger" data-bind="visible: (!valid_name())">
+            <h2>Be the fastest simple math problem solver: 12 + 14 = ??</h2>
+            <h3>Play against other players in real time! (or try to beat the top scores!)</h3>
+            <p>Please introduce your name to start playing!</p>
+        </div>
+
+        <p>Your name:
+            <input maxlength="25" type="text" id="name" name="name" value="" data-bind="value: name, valueUpdate: 'afterkeydown'" /></p>
+
+        <div style="display: none" data-bind="visible: valid_name">
+            <div class="row-fluid">
+                <div class="span12 main">
+                    <span id="operations"></span>
+                    <span class="equal">=</span>
+                    <input class="input_player" maxlength="4" type="text" name="player1" value="" data-bind="value: input_player1, valueUpdate: 'afterkeydown'" />
+                    <div id="msg"></div>
+                </div>
+            </div>
+
+            <div class="row-fluid results">
+                <div class="span4 current_game">
+                    <h3>Current game 
+        <small>(ends in <span id="time" data-bind="text: time, css: { red: time() < 10 }"></span>secs)</small>
+                    </h3>
+
+                    <div class="scores alert alert-danger">
+                        <ol data-bind="foreach: scores">
+                            <li><span data-bind="text: player"></span>: 
+                  <span class="score" data-bind="text: score"></span>
+                            </li>
+                        </ol>
+                        <p data-bind="visible: (scores().length==0)">Solve the math quest and be the first one to score!</p>
+                    </div>
+
+                </div>
+
+                <div class="span4">
+                    <h3>Game history</h3>
+                    <div data-bind="visible: history().length">
+                        <div data-bind="foreach: history">
+                            <div class="game_history alert alert-danger">
+                                <h4><small>game played at: </small><span data-bind="text: name"></span></h4>
+                                <ol data-bind="foreach: scores">
+                                    <li><span data-bind="text: player"></span>: <span class="score" data-bind="text: score"></span></li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="span4 hall_of_fame">
+                    <h3>Hall of Fame (top scores)</h3>
+                    <ol data-bind="foreach: hall_of_fame">
+                        <li>
+                            <strong>
+                                <span data-bind="text: player"></span><span class="score" data-bind="text: score"></span>
+                            </strong>
+                            <span class="timestamp">(<span data-bind="text: timestamp"></span>)
+                            </span>
+                        </li>
+                    </ol>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script src="Scripts/bootstrap.min.js" type="text/javascript"></script>
+    <script src="Scripts/knockout-2.1.0.js" type="text/javascript"></script>
+    <script type="text/javascript" src="Scripts/jquery.signalR-0.5.0.js"></script>
+    <script type="text/javascript" src="signalr/hubs"></script>
+    <script type="text/javascript" src="Scripts/App/MathRace.js"></script>
 </body>
 </html>

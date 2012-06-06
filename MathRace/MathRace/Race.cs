@@ -11,12 +11,12 @@ namespace MathRace
     {
         public Task Connect()
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() => { });
         }
 
         public Task Reconnect(IEnumerable<string> groups)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() => { });
         }
     }
 }
