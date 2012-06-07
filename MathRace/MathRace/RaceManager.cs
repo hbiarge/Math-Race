@@ -14,13 +14,26 @@ namespace MathRace
         private static Timer timer;
         private static IHubContext hub;
         private static DateTime gameStarted;
+        private static Dictionary<string, int> scores;
 
         public static Operation Operation { get; private set; }
+
+        public static List<PlayerScore> Scores
+        {
+            get
+            {
+                return scores
+                    .OrderByDescending(x => x.Value)
+                    .Select(x => new PlayerScore { Player = x.Key, Score = x.Value })
+                    .ToList();
+            }
+        }
 
         public static void Start()
         {
             hub = GlobalHost.ConnectionManager.GetHubContext<Race>();
             Operation = Operation.Create();
+            scores = new Dictionary<string, int>();
             gameStarted = DateTime.Now;
 
             timer = new Timer(o =>
@@ -30,6 +43,7 @@ namespace MathRace
 
                                       if (remaining < 0)
                                       {
+                                          scores.Clear();
                                           gameStarted = DateTime.Now;
                                           hub.Clients.newGame();
                                       }
@@ -41,9 +55,21 @@ namespace MathRace
                                   }, null, 0, 1000);
         }
 
-        public static void NewOperation()
+        public static void CreteNewOperation()
         {
             Operation = Operation.Create();
+        }
+
+        public static void AddWinnerToScores(string winnerName)
+        {
+            if (scores.ContainsKey(winnerName))
+            {
+                scores[winnerName] += 1;
+            }
+            else
+            {
+                scores.Add(winnerName, 1);
+            }
         }
     }
 }

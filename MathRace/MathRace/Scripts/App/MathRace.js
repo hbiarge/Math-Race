@@ -1,4 +1,4 @@
-﻿//util, print msgs --
+﻿// util, print msgs --
 function print_msg(msg, style, time) {
     $('#msg').html('<div class="msg msg-' + style + '">' + msg + '</div>');
     $('#msg').fadeIn();
@@ -8,44 +8,42 @@ function print_msg(msg, style, time) {
 function show_error(msg) { print_msg(msg, 'error'); }
 
 function show_ok(msg) { print_msg(msg, 'ok'); }
-//end print msgs --
+// end print msgs --
 
-$(document).ready(function() {
-
-    var raceHub = $.connection.race;
-
-    raceHub.time = function(remaining) {
+// Hub configuration
+function configureRaceHub(raceHub, race) {
+    raceHub.time = function (remaining) {
         race.time(remaining);
     };
 
-    raceHub.newOperation = function(operation) {
+    raceHub.newOperation = function (operation) {
         $('#operations').html(operation);
         $('input.input_player').val('').select(); //reset and select.
     };
 
-    raceHub.history = function(history) {
+    raceHub.history = function (history) {
         race.history(history); //bind score history (and sort by date)
     };
 
-    raceHub.scores = function(scores) {
+    raceHub.scores = function (scores) {
         race.scores(scores);
         if (scores.length) { //effect
             $('.scores').addClass('selected');
-            setTimeout(function() {
+            setTimeout(function () {
                 $('.scores').removeClass('selected');
             }, 200);
         }
     };
 
-    raceHub.hallOfFame = function(hallOfFame) {
+    raceHub.hallOfFame = function (hallOfFame) {
         race.hall_of_fame(hallOfFame);
     };
 
-    raceHub.newGame = function() {
+    raceHub.newGame = function () {
         print_msg('new game, new score, hurry up!!', 'new', 2000);
     };
 
-    raceHub.resultOperation = function(result) {
+    raceHub.resultOperation = function (result) {
         if (result == 1)
             print_msg('good!!', 'success');
         else if (result == 2)
@@ -53,31 +51,32 @@ $(document).ready(function() {
         else
             print_msg('nooooooooo!', 'error');
     };
+}
+// end hub configuration
 
-    //knockout model and binding
+//knockout model and binding
+function Race(hub) {
+    var self = this;
+    self.hub = hub;
+    self.name = ko.observable();
 
-    function Race() {
-        var self = this;
-        self.name = ko.observable();
+    self.input_player1 = ko.observable();
+    self.scores = ko.observableArray();
+    self.history = ko.observableArray();
+    self.hall_of_fame = ko.observableArray();
+    self.time = ko.observableArray();
 
-        self.input_player1 = ko.observable();
-        self.scores = ko.observableArray();
-        self.history = ko.observableArray();
-        self.hall_of_fame = ko.observableArray();
-        self.time = ko.observableArray();
+    self.valid_name = ko.computed(function () {
+        return (self.name() && self.name().length > 2);
+    }, self);
 
-        self.valid_name = ko.computed(function() {
-            return (self.name() && self.name().length > 2);
-        }, self);
+    self.sendOperationResult = function () {
+        hub.solveOperation(self.input_player1(), self.name());
+    };
+}
+//end knockout model and binding
 
-        self.sendOperationResult = function() {
-            raceHub.solveOperation(self.input_player1(), self.name());
-        };
-    }
-
-    var race = new Race();
-    ko.applyBindings(race);
-    //end knockout model and binding
+$(document).ready(function () {
 
     //jQuery bindings
     $('input.input_player').click(function (e) {
@@ -92,6 +91,13 @@ $(document).ready(function() {
             $('input.input_player').select();
         }
     });
+
+    var raceHub = $.connection.race;
+    var race = new Race(raceHub);
+    
+    configureRaceHub(raceHub, race);
+    
+    ko.applyBindings(race);
 
     $.connection.hub.start();
 });

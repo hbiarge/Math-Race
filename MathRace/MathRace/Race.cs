@@ -18,11 +18,12 @@ namespace MathRace
                 this.Caller.resultOperation(1); //msg to winner
 
                 var safeName = name.Length > 20 ? name.Substring(0, 20) : name; //avoid long names
+                RaceManager.AddWinnerToScores(safeName);
                 //scores[safe_name] = (scores[safe_name] || 0) + 1 //credit score to client
-                //broadcast (sessions, 'scores', format_scores(scores)); //broacast scores
+                this.Clients.scores(RaceManager.Scores); //broacast scores
 
                 //new challenge
-                RaceManager.NewOperation();
+                RaceManager.CreteNewOperation();
                 this.Clients.newOperation(RaceManager.Operation.Quest); //new challenge for all players
             }
             else
