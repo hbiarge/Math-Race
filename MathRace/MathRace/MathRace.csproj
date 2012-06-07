@@ -114,6 +114,7 @@
     </Compile>
     <Compile Include="Model\Operation.cs" />
     <Compile Include="Model\PlayerScore.cs" />
+    <Compile Include="Model\RaceHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Race.cs" />
     <Compile Include="RaceManager.cs" />

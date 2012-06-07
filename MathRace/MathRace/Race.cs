@@ -19,7 +19,6 @@ namespace MathRace
 
                 var safeName = name.Length > 20 ? name.Substring(0, 20) : name; //avoid long names
                 RaceManager.AddWinnerToScores(safeName);
-                //scores[safe_name] = (scores[safe_name] || 0) + 1 //credit score to client
                 this.Clients.scores(RaceManager.Scores); //broacast scores
 
                 //new challenge

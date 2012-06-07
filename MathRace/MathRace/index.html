@@ -49,8 +49,8 @@
 
                     <div class="scores alert alert-danger">
                         <ol data-bind="foreach: scores">
-                            <li><span data-bind="text: Player"></span>: 
-                  <span class="score" data-bind="text: Score"></span>
+                            <li><span data-bind="text: player"></span>: 
+                  <span class="score" data-bind="text: score"></span>
                             </li>
                         </ol>
                         <p data-bind="visible: (scores().length==0)">Solve the math quest and be the first one to score!</p>

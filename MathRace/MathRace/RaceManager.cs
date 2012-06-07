@@ -29,10 +29,13 @@ namespace MathRace
             }
         }
 
+        public static List<RaceHistory> History { get; private set; }
+
         public static void Start()
         {
             hub = GlobalHost.ConnectionManager.GetHubContext<Race>();
             Operation = Operation.Create();
+            History = new List<RaceHistory>();
             scores = new Dictionary<string, int>();
             gameStarted = DateTime.Now;
 
@@ -43,8 +46,15 @@ namespace MathRace
 
                                       if (remaining < 0)
                                       {
+                                          if (scores.Count > 0)
+                                          {
+                                              AddScoresToHistory();
+                                          }
+
                                           scores.Clear();
                                           gameStarted = DateTime.Now;
+                                          hub.Clients.scores(Scores);
+                                          hub.Clients.history(History);
                                           hub.Clients.newGame();
                                       }
                                       else
@@ -69,6 +79,20 @@ namespace MathRace
             else
             {
                 scores.Add(winnerName, 1);
+            }
+        }
+
+        private static void AddScoresToHistory()
+        {
+            History.Insert(0, new RaceHistory
+                                  {
+                                      Timestamp = gameStarted,
+                                      Scores = Scores
+                                  });
+
+            if (History.Count > 20)
+            {
+                History.RemoveAt(History.Count - 1);
             }
         }
     }
