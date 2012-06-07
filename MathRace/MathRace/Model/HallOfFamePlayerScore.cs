@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace MathRace.Model
 {
     [JsonObject(MemberSerialization.OptIn)]
-    public class RaceHistory
+    public class HallOfFamePlayerScore
     {
         public DateTime Timestamp { get; set; }
 
@@ -15,7 +14,10 @@ namespace MathRace.Model
             get { return Timestamp.ToString("dd/MM/yyy hh:mm"); }
         }
 
-        [JsonProperty(PropertyName = "scores")]
-        public List<PlayerScore> Scores { get; set; }
+        [JsonProperty(PropertyName = "player")]
+        public string Player { get; set; }
+
+        [JsonProperty(PropertyName = "score")]
+        public int Score { get; set; }
     }
 }

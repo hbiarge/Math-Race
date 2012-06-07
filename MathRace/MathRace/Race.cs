@@ -33,7 +33,11 @@ namespace MathRace
 
         public Task Connect()
         {
-            return this.Clients.newOperation(RaceManager.Operation.Quest);
+            return Task.WhenAll(
+                this.Clients.history(RaceManager.History),
+                this.Clients.hallOfFame(RaceManager.HallOfFame),
+                this.Clients.newOperation(RaceManager.Operation.Quest)
+            );
         }
 
         public Task Reconnect(IEnumerable<string> groups)

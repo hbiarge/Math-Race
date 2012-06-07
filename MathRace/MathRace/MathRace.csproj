@@ -112,6 +112,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Model\HallOfFamePlayerScore.cs" />
     <Compile Include="Model\Operation.cs" />
     <Compile Include="Model\PlayerScore.cs" />
     <Compile Include="Model\RaceHistory.cs" />

@@ -30,13 +30,15 @@ namespace MathRace
         }
 
         public static List<RaceHistory> History { get; private set; }
+        public static List<HallOfFamePlayerScore> HallOfFame { get; private set; }
 
         public static void Start()
         {
             hub = GlobalHost.ConnectionManager.GetHubContext<Race>();
             Operation = Operation.Create();
-            History = new List<RaceHistory>();
             scores = new Dictionary<string, int>();
+            History = new List<RaceHistory>();
+            HallOfFame = new List<HallOfFamePlayerScore>();
             gameStarted = DateTime.Now;
 
             timer = new Timer(o =>
@@ -49,12 +51,15 @@ namespace MathRace
                                           if (scores.Count > 0)
                                           {
                                               AddScoresToHistory();
-                                          }
+                                              UpdateHallOfFame();
 
+                                              hub.Clients.history(History);
+                                              hub.Clients.hallOfFame(HallOfFame);
+                                          }
+                                          
                                           scores.Clear();
                                           gameStarted = DateTime.Now;
                                           hub.Clients.scores(Scores);
-                                          hub.Clients.history(History);
                                           hub.Clients.newGame();
                                       }
                                       else
@@ -94,6 +99,22 @@ namespace MathRace
             {
                 History.RemoveAt(History.Count - 1);
             }
+        }
+
+        private static void UpdateHallOfFame()
+        {
+            HallOfFame.AddRange(Scores
+                .Select(x => new HallOfFamePlayerScore
+                               {
+                                   Timestamp = gameStarted,
+                                   Player = x.Player,
+                                   Score = x.Score
+                               }));
+
+            HallOfFame = HallOfFame
+                .OrderByDescending(x => x.Score)
+                .Take(20)
+                .ToList();
         }
     }
 }
