@@ -2,23 +2,65 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Web;
 using MathRace.Model;
 using SignalR;
 using SignalR.Hubs;
 
 namespace MathRace
 {
-    public static class RaceManager
+    public class RaceManager
     {
-        private static Timer timer;
-        private static IHubContext hub;
-        private static DateTime gameStarted;
-        private static Dictionary<string, int> scores;
+        private Timer timer;
+        private readonly IHubContext hub;
+        private DateTime gameStarted;
+        private readonly Dictionary<string, int> scores;
 
-        public static Operation Operation { get; private set; }
+        public RaceManager()
+        {
+            // Obtenemos la instancia del hub
+            hub = GlobalHost.ConnectionManager.GetHubContext<Race>();
 
-        public static List<PlayerScore> Scores
+            // Inicializamos las estructuras que almacenan la info del juego
+            scores = new Dictionary<string, int>();
+            History = new List<RaceHistory>();
+            HallOfFame = new List<HallOfFamePlayerScore>();
+            
+            // Creamos una nueva operación y establecemos la fecha de inicio del juego
+            Operation = Operation.Create();
+            gameStarted = DateTime.Now;
+
+            timer = new Timer(o =>
+            {
+                var elapsed = DateTime.Now.Subtract(gameStarted);
+                var remaining = 30 - (int)elapsed.TotalSeconds;
+
+                if (remaining < 0)
+                {
+                    if (scores.Count > 0)
+                    {
+                        AddScoresToHistory();
+                        UpdateHallOfFame();
+
+                        hub.Clients.history(History);
+                        hub.Clients.hallOfFame(HallOfFame);
+                    }
+
+                    scores.Clear();
+                    gameStarted = DateTime.Now;
+                    hub.Clients.scores(Scores);
+                    hub.Clients.newGame();
+                }
+                else
+                {
+                    hub.Clients.time(remaining);
+                }
+
+            }, null, 0, 1000);
+        }
+
+        public Operation Operation { get; private set; }
+
+        public List<PlayerScore> Scores
         {
             get
             {
@@ -29,53 +71,15 @@ namespace MathRace
             }
         }
 
-        public static List<RaceHistory> History { get; private set; }
-        public static List<HallOfFamePlayerScore> HallOfFame { get; private set; }
+        public List<RaceHistory> History { get; private set; }
+        public List<HallOfFamePlayerScore> HallOfFame { get; private set; }
 
-        public static void Start()
-        {
-            hub = GlobalHost.ConnectionManager.GetHubContext<Race>();
-            Operation = Operation.Create();
-            scores = new Dictionary<string, int>();
-            History = new List<RaceHistory>();
-            HallOfFame = new List<HallOfFamePlayerScore>();
-            gameStarted = DateTime.Now;
-
-            timer = new Timer(o =>
-                                  {
-                                      var elapsed = DateTime.Now.Subtract(gameStarted);
-                                      var remaining = 30 - (int)elapsed.TotalSeconds;
-
-                                      if (remaining < 0)
-                                      {
-                                          if (scores.Count > 0)
-                                          {
-                                              AddScoresToHistory();
-                                              UpdateHallOfFame();
-
-                                              hub.Clients.history(History);
-                                              hub.Clients.hallOfFame(HallOfFame);
-                                          }
-                                          
-                                          scores.Clear();
-                                          gameStarted = DateTime.Now;
-                                          hub.Clients.scores(Scores);
-                                          hub.Clients.newGame();
-                                      }
-                                      else
-                                      {
-                                          hub.Clients.time(remaining);
-                                      }
-
-                                  }, null, 0, 1000);
-        }
-
-        public static void CreteNewOperation()
+        public void CreteNewOperation()
         {
             Operation = Operation.Create();
         }
 
-        public static void AddWinnerToScores(string winnerName)
+        public void AddWinnerToScores(string winnerName)
         {
             if (scores.ContainsKey(winnerName))
             {
@@ -87,7 +91,7 @@ namespace MathRace
             }
         }
 
-        private static void AddScoresToHistory()
+        private void AddScoresToHistory()
         {
             History.Insert(0, new RaceHistory
                                   {
@@ -101,7 +105,7 @@ namespace MathRace
             }
         }
 
-        private static void UpdateHallOfFame()
+        private void UpdateHallOfFame()
         {
             HallOfFame.AddRange(Scores
                 .Select(x => new HallOfFamePlayerScore

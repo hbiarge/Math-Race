@@ -9,34 +9,52 @@ namespace MathRace
 {
     public class Race : Hub, IConnected
     {
-        public void SolveOperation(int operation, string name)
+        private readonly RaceManager raceManager;
+
+        public Race(RaceManager raceManager)
         {
-            if (operation == RaceManager.Operation.Solution)
+            if (raceManager == null)
             {
-                //result_operation: 1:you win, 2:other player won, 0: bad operation
-                this.Clients.resultOperation(2); //msg to rest of players. someone else won!
-                this.Caller.resultOperation(1); //msg to winner
+                throw new ArgumentNullException("raceManager");
+            }
 
-                var safeName = name.Length > 20 ? name.Substring(0, 20) : name; //avoid long names
-                RaceManager.AddWinnerToScores(safeName);
-                this.Clients.scores(RaceManager.Scores); //broacast scores
+            this.raceManager = raceManager;
+        }
 
-                //new challenge
-                RaceManager.CreteNewOperation();
-                this.Clients.newOperation(RaceManager.Operation.Quest); //new challenge for all players
+        public Task SolveOperation(int operation, string name)
+        {
+            if (operation == raceManager.Operation.Solution)
+            {
+                return Task.Factory.StartNew(() =>
+                                          {
+                                              //result_operation: 1:you win, 2:other player won, 0: bad operation
+                                              this.Clients.resultOperation(2);
+                                              //msg to rest of players. someone else won!
+                                              this.Caller.resultOperation(1); //msg to winner
+
+                                              var safeName = name.Length > 20 ? name.Substring(0, 20) : name;
+                                              //avoid long names
+                                              raceManager.AddWinnerToScores(safeName);
+                                              this.Clients.scores(raceManager.Scores); //broacast scores
+
+                                              //new challenge
+                                              raceManager.CreteNewOperation();
+                                              this.Clients.newOperation(raceManager.Operation.Quest);
+                                              //new challenge for all players
+                                          });
             }
             else
             {
-                this.Clients.resultOperation(0);
+                return this.Clients.resultOperation(0);
             }
         }
 
         public Task Connect()
         {
             return Task.WhenAll(
-                this.Clients.history(RaceManager.History),
-                this.Clients.hallOfFame(RaceManager.HallOfFame),
-                this.Clients.newOperation(RaceManager.Operation.Quest)
+                this.Clients.history(raceManager.History),
+                this.Clients.hallOfFame(raceManager.HallOfFame),
+                this.Clients.newOperation(raceManager.Operation.Quest)
             );
         }
 

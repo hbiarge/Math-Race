@@ -1,48 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
-using System.Web.SessionState;
+using System.Web.Routing;
+using Ninject;
+using SignalR;
+using SignalR.Ninject;
 
 namespace MathRace
 {
     public class Global : System.Web.HttpApplication
     {
-
         protected void Application_Start(object sender, EventArgs e)
         {
-            RaceManager.Start();
-        }
+            // Creamos el contenedor y mapeamos el tipo RaceManager como un  Singleton
+            IKernel container = new StandardKernel();
+            container.Bind<RaceManager>().ToSelf().InSingletonScope();
 
-        protected void Session_Start(object sender, EventArgs e)
-        {
+            // Redefinimos el DependencyResolver de signalR para que use el contenedor
+            // El juego se iniciará con la primera petición
+            GlobalHost.DependencyResolver = new NinjectDependencyResolver(container);
 
-        }
-
-        protected void Application_BeginRequest(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Application_AuthenticateRequest(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Application_Error(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Session_End(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Application_End(object sender, EventArgs e)
-        {
-
+            // Volvemos a registrar las rutas de los hubs
+            RouteTable.Routes.MapHubs();
         }
     }
 }
