@@ -1,11 +1,12 @@
-﻿using System;
-using System.Web.Routing;
-using Ninject;
-using SignalR;
-using SignalR.Ninject;
-
-namespace MathRace
+﻿namespace MathRace
 {
+    using System;
+    using System.Web.Routing;
+
+    using Microsoft.AspNet.SignalR;
+
+    using Ninject;
+
     public class Global : System.Web.HttpApplication
     {
         protected void Application_Start(object sender, EventArgs e)

@@ -1,23 +1,24 @@
-using System;
-
 namespace MathRace.Model
 {
+    using System;
+
     public class Operation
     {
-        private static Random random = new Random();
+        private static readonly Random Random = new Random();
 
         private Operation()
         {
         }
 
         public string Quest { get; private set; }
+
         public int Solution { get; private set; }
 
         public static Operation Create()
         {
-            var left = random.Next(0, 21);
-            var right = random.Next(0, 21);
-            var op = random.Next(0, 2);
+            var left = Random.Next(0, 21);
+            var right = Random.Next(0, 21);
+            var op = Random.Next(0, 2);
 
             if (op == 0)
             {

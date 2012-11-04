@@ -12,20 +12,20 @@ function show_ok(msg) { print_msg(msg, 'ok'); }
 
 // Hub configuration
 function configureRaceHub(raceHub, race) {
-    raceHub.time = function (remaining) {
+    raceHub.client.time = function (remaining) {
         race.time(remaining);
     };
 
-    raceHub.newOperation = function (operation) {
+    raceHub.client.newOperation = function (operation) {
         $('#operations').html(operation);
         $('input.input_player').val('').select(); //reset and select.
     };
 
-    raceHub.history = function (history) {
+    raceHub.client.history = function (history) {
         race.history(history); //bind score history (and sort by date)
     };
 
-    raceHub.scores = function (scores) {
+    raceHub.client.scores = function (scores) {
         race.scores(scores);
         if (scores.length) { //effect
             $('.scores').addClass('selected');
@@ -35,15 +35,15 @@ function configureRaceHub(raceHub, race) {
         }
     };
 
-    raceHub.hallOfFame = function (hallOfFame) {
+    raceHub.client.hallOfFame = function (hallOfFame) {
         race.hall_of_fame(hallOfFame);
     };
 
-    raceHub.newGame = function () {
+    raceHub.client.newGame = function () {
         print_msg('new game, new score, hurry up!!', 'new', 2000);
     };
 
-    raceHub.resultOperation = function (result) {
+    raceHub.client.resultOperation = function (result) {
         if (result == 1)
             print_msg('good!!', 'success');
         else if (result == 2)
@@ -71,7 +71,7 @@ function Race(hub) {
     }, self);
 
     self.sendOperationResult = function () {
-        hub.solveOperation(self.input_player1(), self.name());
+        hub.server.solveOperation(self.input_player1(), self.name());
     };
 }
 //end knockout model and binding

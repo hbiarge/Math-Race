@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-
-namespace MathRace.Model
+﻿namespace MathRace.Model
 {
+    using Newtonsoft.Json;
+
     [JsonObject(MemberSerialization.OptIn)]
     public class PlayerScore
     {

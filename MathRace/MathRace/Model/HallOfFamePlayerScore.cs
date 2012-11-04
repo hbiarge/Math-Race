@@ -1,8 +1,9 @@
-﻿using System;
-using Newtonsoft.Json;
-
-namespace MathRace.Model
+﻿namespace MathRace.Model
 {
+    using System;
+
+    using Newtonsoft.Json;
+
     [JsonObject(MemberSerialization.OptIn)]
     public class HallOfFamePlayerScore
     {
@@ -11,7 +12,7 @@ namespace MathRace.Model
         [JsonProperty(PropertyName = "name")]
         public string Name
         {
-            get { return Timestamp.ToString("dd/MM/yyy hh:mm"); }
+            get { return this.Timestamp.ToString("dd/MM/yyy hh:mm"); }
         }
 
         [JsonProperty(PropertyName = "player")]
