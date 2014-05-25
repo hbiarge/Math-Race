@@ -7,7 +7,7 @@ Implementación de un sencillo juego matemático basado en el ejemplo de @iloire
 
 ###Desarrollo:
 * Asp.Net 4.5
-* SignalR 1.0.0-alpha1
+* SignalR 2.0.3
 * Knockout 2.2.0
 * jQuery 1.8.2
 * Twitter Bootstrap 
