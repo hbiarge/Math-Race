@@ -1,4 +1,4 @@
-namespace MathRace
+namespace MathRace.Infrastructure.Resolvers
 {
     using System;
     using System.Collections.Generic;
@@ -8,11 +8,11 @@ namespace MathRace
 
     using Ninject;
 
-    public class NinjectDependencyResolver : DefaultDependencyResolver
+    public class SignalRNinjectDependencyResolver : DefaultDependencyResolver
     {
         private readonly IKernel kernel;
 
-        public NinjectDependencyResolver(IKernel kernel)
+        public SignalRNinjectDependencyResolver(IKernel kernel)
         {
             if (kernel == null)
             {

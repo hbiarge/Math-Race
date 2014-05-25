@@ -93,6 +93,15 @@ $(document).ready(function () {
     });
 
     var raceHub = $.connection.race;
+
+    // Enable logging
+    $.connection.hub.logging = true;
+
+    // Configure error callback
+    $.connection.hub.error(function (error) {
+        log('SignalR error: ' + error);
+    });
+
     var race = new Race(raceHub);
     
     configureRaceHub(raceHub, race);

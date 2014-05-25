@@ -14,7 +14,7 @@ namespace MathRace.Model
 
         public int Solution { get; private set; }
 
-        public static Operation Create()
+        public static Operation CreateNew()
         {
             var left = Random.Next(0, 21);
             var right = Random.Next(0, 21);

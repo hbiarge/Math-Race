@@ -1,20 +1,21 @@
-﻿namespace MathRace
+﻿namespace MathRace.Model
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
 
-    using MathRace.Model;
+    using MathRace.Hubs;
 
     using Microsoft.AspNet.SignalR;
-    using Microsoft.AspNet.SignalR.Hubs;
 
     public class RaceManager
     {
         private readonly IHubContext hub;
 
         private readonly Dictionary<string, int> scores;
+
+        private readonly int timeDurationInSeconds = 30;
 
         private Timer timer;
 
@@ -31,13 +32,13 @@
             this.HallOfFame = new List<HallOfFamePlayerScore>();
 
             // Creamos una nueva operación y establecemos la fecha de inicio del juego
-            Operation = Operation.Create();
+            Operation = Operation.CreateNew();
             this.gameStarted = DateTime.Now;
 
             this.timer = new Timer(o =>
             {
                 var elapsed = DateTime.Now.Subtract(gameStarted);
-                var remaining = 30 - (int)elapsed.TotalSeconds;
+                var remaining = timeDurationInSeconds - (int)elapsed.TotalSeconds;
 
                 if (remaining < 0)
                 {
@@ -84,7 +85,7 @@
 
         public void CreteNewOperation()
         {
-            Operation = Operation.Create();
+            Operation = Operation.CreateNew();
         }
 
         public void AddWinnerToScores(string winnerName)
@@ -118,12 +119,12 @@
         private void UpdateHallOfFame()
         {
             this.HallOfFame.AddRange(this.Scores
-                .Select(x => new HallOfFamePlayerScore
-                               {
-                                   Timestamp = this.gameStarted,
-                                   Player = x.Player,
-                                   Score = x.Score
-                               }));
+                .Select(x => new HallOfFamePlayerScore{
+
+                    Timestamp = this.gameStarted,
+                    Player = x.Player,
+                    Score = x.Score
+                }));
 
             this.HallOfFame = this.HallOfFame
                 .OrderByDescending(x => x.Score)
